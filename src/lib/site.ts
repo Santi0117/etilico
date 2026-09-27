@@ -1,0 +1,22 @@
+export const site = {
+  brandName: "Etílico",
+  name: "Etílico",
+  fullName: "Etílico | Cocktails & Drinks",
+  tagline: "Cocktails & Drinks",
+  specialty: "Barra libre y coctelería para eventos",
+  website: "https://etilico.cr",
+  region: "Costa Rica",
+  instagram: "etilico.cr",
+  instagramUrl: "https://www.instagram.com/etilico.cr/",
+  instagramDm: "https://ig.me/m/etilico.cr",
+  facebook: "Etílico Cocktails & Drinks",
+  facebookUrl: "https://www.facebook.com/etilico.cr",
+  /** Agregar número cuando lo confirmen. Vacío = CTA por Instagram. */
+  whatsapp: "",
+  phone: "",
+  email: "",
+  hours: "Eventos en todo Costa Rica · Cotizaciones por Instagram",
+  coverage: "Todo Costa Rica",
+  bio: "Servicio de barra libre y coctelería para todo tipo de eventos. Llevamos la barra, el equipo y los bartenders a tu boda, corporativo o fiesta.",
+  ceo: "@adrian_sanchez_77",
+} as const;
