@@ -7,115 +7,116 @@ const includes = [
   {
     n: "01",
     title: "Montaje y desmontaje",
+    tag: "Llegamos y nos vamos",
     text: "Llegamos antes, armamos la barra y nos llevamos todo al final. Vos no movés una caja.",
   },
   {
     n: "02",
-    title: "Bartenders profesionales",
+    title: "Bartenders",
+    tag: "Equipo en casa",
     text: "Equipo uniformado que sabe leer la fiesta y sostener el ritmo de servicio toda la noche.",
   },
   {
     n: "03",
     title: "Licores y mixers",
+    tag: "La barra viaja llena",
     text: "Selección nacional o importada según el paquete, con jugos, sodas y garnish fresco.",
   },
   {
     n: "04",
     title: "Hielo y cristalería",
-    text: "Hielo suficiente, cristalería real y reposición constante. Sin vasos plásticos.",
+    tag: "Sin vasos plásticos",
+    text: "Hielo suficiente, cristalería real y reposición constante durante todo el servicio.",
   },
   {
     n: "05",
     title: "Carta a la medida",
+    tag: "Tragos de tu evento",
     text: "Elegimos juntos los tragos del evento, incluida la opción sin alcohol para todos.",
   },
   {
     n: "06",
-    title: "Transporte a todo el país",
+    title: "Transporte",
+    tag: "Todo Costa Rica",
     text: "San José, Guanacaste, Puntarenas o donde sea la fiesta. La barra viaja con nosotros.",
   },
-];
+] as const;
 
 export default function Services() {
-  const [open, setOpen] = useState(0);
+  const [active, setActive] = useState(0);
+  const current = includes[active] ?? includes[0];
 
   return (
-    <section
-      id="servicios"
-      data-tone="light"
-      className="section-pad relative overflow-hidden bg-hueso text-noche"
-    >
-      <div className="grain pointer-events-none absolute inset-0 opacity-[0.3] mix-blend-multiply" aria-hidden />
-      <div className="section-wrap relative grid gap-14 lg:grid-cols-12 lg:gap-16">
-        <div className="lg:col-span-5">
-          <Reveal>
-            <span className="eyebrow text-lima-deep">Qué llega con la barra</span>
-            <h2 className="display-lg mt-5">
-              Todo incluido,
-              <span className="block italic opacity-60">de verdad.</span>
-            </h2>
-            <p className="mt-7 max-w-sm text-sm leading-relaxed text-noche/60 md:text-base">
-              No somos un bar al que vas: somos el servicio que llega a tu celebración con
-              todo listo para brindar. Vos ponés el lugar y la gente.
-            </p>
-
-            <div className="mt-10 border-t border-black/15 pt-8">
-              <p className="font-display text-5xl">377+</p>
-              <p className="micro mt-2 text-noche/50">Eventos servidos en Costa Rica</p>
+    <section id="servicios" className="section-pad relative overflow-hidden bg-noche">
+      <div
+        className="pointer-events-none absolute top-1/3 left-1/2 h-[45vh] w-[70vw] -translate-x-1/2 rounded-full bg-lima/[0.07] blur-[130px]"
+        aria-hidden
+      />
+      <div className="section-wrap relative">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-xl">
+              <span className="eyebrow text-lima">Qué llega con la barra</span>
+              <h2 className="display-lg mt-5 text-ink">
+                Todo
+                <span className="block">incluido.</span>
+              </h2>
             </div>
+            <div className="max-w-xs">
+              <p className="font-display text-5xl text-ink">+500</p>
+              <p className="micro mt-2 text-ink-faint">Eventos servidos en Costa Rica</p>
+              <p className="mt-4 text-sm leading-relaxed text-ink-muted">
+                No somos un bar al que vas: somos el servicio que llega a tu celebración con
+                todo listo para brindar.
+              </p>
+            </div>
+          </div>
+        </Reveal>
 
-            <a href="#cotizar" className="btn-primary mt-10 !bg-noche !text-hueso hover:!bg-lima hover:!text-noche">
-              Armar mi barra
-            </a>
-          </Reveal>
-        </div>
-
-        <div className="lg:col-span-7">
-          <dl className="border-b border-black/15">
+        <div className="mt-14 grid gap-10 lg:grid-cols-12 lg:gap-0">
+          <div
+            className="border-t border-white/10 lg:col-span-5 lg:pr-12"
+            role="tablist"
+            aria-label="Qué incluye el servicio"
+          >
             {includes.map((item, i) => {
-              const on = open === i;
+              const on = active === i;
               return (
                 <Reveal key={item.n} delay={i * 60}>
-                  <div className="border-t border-black/15">
-                    <button
-                      type="button"
-                      onClick={() => setOpen(on ? -1 : i)}
-                      aria-expanded={on}
-                      className="flex w-full items-center gap-5 py-6 text-left"
-                    >
-                      <dt className="micro w-8 shrink-0 text-noche/35 tabular-nums">{item.n}</dt>
-                      <span
-                        className={`font-display flex-1 text-2xl transition-opacity duration-500 md:text-3xl ${
-                          on ? "opacity-100" : "opacity-55"
-                        }`}
-                      >
-                        {item.title}
-                      </span>
-                      <span
-                        className={`relative h-4 w-4 shrink-0 transition-transform duration-500 ease-[var(--ease-luxe)] ${
-                          on ? "rotate-45" : ""
-                        }`}
-                        aria-hidden
-                      >
-                        <span className="absolute top-1/2 left-0 h-px w-full -translate-y-1/2 bg-noche" />
-                        <span className="absolute top-0 left-1/2 h-full w-px -translate-x-1/2 bg-noche" />
-                      </span>
-                    </button>
-                    <dd
-                      className="grid overflow-hidden transition-[grid-template-rows,opacity] duration-700 ease-[var(--ease-luxe)]"
-                      style={{ gridTemplateRows: on ? "1fr" : "0fr", opacity: on ? 1 : 0 }}
-                    >
-                      <span className="overflow-hidden">
-                        <span className="block max-w-md pb-7 pl-13 text-sm leading-relaxed text-noche/60">
-                          {item.text}
-                        </span>
-                      </span>
-                    </dd>
-                  </div>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={on}
+                    aria-controls="include-detail"
+                    className={on ? "prop-pick prop-pick--tight is-on" : "prop-pick prop-pick--tight"}
+                    onClick={() => setActive(i)}
+                  >
+                    <span className="micro text-ink-faint tabular-nums">{item.n}</span>
+                    <span className="prop-pick__name">{item.title}</span>
+                  </button>
                 </Reveal>
               );
             })}
-          </dl>
+          </div>
+
+          <div
+            id="include-detail"
+            role="tabpanel"
+            className="flex flex-col lg:col-span-7 lg:border-l lg:border-white/10 lg:pl-12"
+          >
+            <div key={current.n} className="swap-in flex h-full flex-col">
+              <span className="micro text-lima">{current.tag}</span>
+              <h3 className="font-display mt-4 text-3xl text-ink md:text-4xl">{current.title}</h3>
+              <p className="mt-6 max-w-md text-[0.95rem] leading-relaxed text-ink-soft">
+                {current.text}
+              </p>
+              <div className="mt-9 lg:mt-auto lg:pt-10">
+                <a href="#cotizar" className="btn-primary">
+                  Armar mi barra
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

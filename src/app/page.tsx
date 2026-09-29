@@ -5,13 +5,12 @@ import Bars from "@/components/Bars";
 import Services from "@/components/Services";
 import Carta from "@/components/Carta";
 import Events from "@/components/Events";
-import Packages from "@/components/Packages";
+import Nights from "@/components/Nights";
 import Process from "@/components/Process";
-import About from "@/components/About";
 import Testimonials from "@/components/Testimonials";
 import Reservation from "@/components/Reservation";
 import Footer from "@/components/Footer";
-import InstagramFloat from "@/components/InstagramFloat";
+import WhatsAppFloat from "@/components/WhatsAppFloat";
 import ToneWatcher from "@/components/ToneWatcher";
 
 export default function Home() {
@@ -26,14 +25,13 @@ export default function Home() {
         <Services />
         <Carta />
         <Events />
-        <Packages />
+        <Nights />
         <Process />
-        <About />
         <Testimonials />
         <Reservation />
       </main>
       <Footer />
-      <InstagramFloat />
+      <WhatsAppFloat />
     </>
   );
 }

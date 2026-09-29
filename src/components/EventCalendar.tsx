@@ -74,7 +74,7 @@ export default function EventCalendar({ value, onChange }: EventCalendarProps) {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between gap-3">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <button
           type="button"
           onClick={() => go(-1)}

@@ -10,7 +10,7 @@ const REEL = ["espresso-martini", "paloma", "negroni", "blue-lagoon", "margarita
   .filter(Boolean);
 
 const stats = [
-  { value: "377", suffix: "+", label: "Eventos servidos" },
+  { value: "500", suffix: "+", label: "Eventos servidos" },
   { value: "5.3", suffix: "k", label: "En Instagram" },
   { value: "3", suffix: "", label: "Barras propias" },
   { value: "CR", suffix: "", label: "Todo el país" },

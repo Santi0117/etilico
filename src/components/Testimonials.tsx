@@ -18,30 +18,41 @@ const quotes = [
   },
 ];
 
+function Stars() {
+  return (
+    <span className="review-stars" aria-label="5 de 5 estrellas">
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg key={i} viewBox="0 0 20 20" aria-hidden>
+          <path d="M10 1.35 12.47 6.4l5.58.81-4.04 3.94.95 5.55L10 14.27 5.04 16.7l.95-5.55L1.95 7.21l5.58-.81L10 1.35Z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
 export default function Testimonials() {
   return (
-    <section className="section-pad relative overflow-hidden bg-carbon">
+    <section id="reseñas" className="relative overflow-hidden bg-noche py-16 md:py-24">
       <div className="section-wrap">
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
-            <span className="eyebrow justify-center text-lima">Quiénes ya brindaron</span>
-            <h2 className="display-lg mt-5 text-ink">El after se recuerda por la barra</h2>
+            <span className="review-kicker">Quiénes ya brindaron</span>
+            <h2 className="display-md mt-5 text-ink">El after se recuerda por la barra</h2>
+            <p className="mt-3 text-sm leading-relaxed text-ink-muted md:mt-4">
+              Eventos en Costa Rica donde la copa, el ritmo y el montaje hicieron la diferencia.
+            </p>
           </div>
         </Reveal>
 
-        <div className="mt-16 grid gap-px md:grid-cols-3">
+        <div className="mt-10 grid gap-4 md:mt-12 md:grid-cols-3 md:gap-5">
           {quotes.map((quote, i) => (
-            <Reveal key={quote.name} delay={i * 90}>
-              <blockquote className="flex h-full flex-col border-t border-white/10 pt-8 md:px-7 md:first:pl-0 md:last:pr-0">
-                <span className="font-display text-5xl leading-none text-lima/50" aria-hidden>
-                  “
-                </span>
-                <p className="mt-4 flex-1 text-[0.95rem] leading-relaxed text-ink-soft">
-                  {quote.text}
-                </p>
-                <footer className="mt-8">
-                  <p className="font-display text-xl text-ink">{quote.name}</p>
-                  <p className="micro mt-1.5 text-ink-faint">{quote.role}</p>
+            <Reveal key={quote.name} delay={i * 80}>
+              <blockquote className="review-card">
+                <Stars />
+                <p className="review-card__text">“{quote.text}”</p>
+                <footer className="mt-auto pt-6">
+                  <p className="font-medium text-ink">{quote.name}</p>
+                  <p className="mt-1 text-sm text-ink-faint">{quote.role}</p>
                 </footer>
               </blockquote>
             </Reveal>

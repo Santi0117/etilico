@@ -9,6 +9,38 @@ import { site } from "@/lib/site";
 
 const SECTION_IDS = navLinks.map((l) => l.id);
 
+function InstagramIcon({ className = "h-[18px] w-[18px]" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>
+      <path d="M7.75 2h8.5A5.75 5.75 0 0 1 22 7.75v8.5A5.75 5.75 0 0 1 16.25 22h-8.5A5.75 5.75 0 0 1 2 16.25v-8.5A5.75 5.75 0 0 1 7.75 2Zm0 1.5A4.25 4.25 0 0 0 3.5 7.75v8.5A4.25 4.25 0 0 0 7.75 20.5h8.5a4.25 4.25 0 0 0 4.25-4.25v-8.5A4.25 4.25 0 0 0 16.25 3.5h-8.5Zm8.75 2.25a.75.75 0 0 1 .75.75v.01a.75.75 0 0 1-1.5 0V6.5a.75.75 0 0 1 .75-.75ZM12 7a5 5 0 1 1 0 10 5 5 0 1 1 0-10Zm0 1.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z" />
+    </svg>
+  );
+}
+
+function InstagramLink({
+  light,
+  className = "",
+}: {
+  light: boolean;
+  className?: string;
+}) {
+  return (
+    <a
+      href={site.instagramUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`Instagram @${site.instagram}`}
+      className={`flex h-11 w-11 items-center justify-center rounded-full border transition duration-500 ${
+        light
+          ? "border-black/15 text-noche hover:border-black/40 hover:text-noche"
+          : "border-white/15 text-ink hover:border-lima/60 hover:text-lima"
+      } ${className}`}
+    >
+      <InstagramIcon />
+    </a>
+  );
+}
+
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -61,7 +93,7 @@ export default function Header() {
             <Logo />
           </a>
 
-          <nav className="hidden items-center lg:flex" aria-label="Principal">
+          <nav className="hidden items-center gap-1 lg:flex" aria-label="Principal">
             {navLinks.map((link) => (
               <a
                 key={link.href}
@@ -71,9 +103,11 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
+            <InstagramLink light={light} className="ml-2" />
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <InstagramLink light={light} className="lg:hidden" />
             <a
               href="#cotizar"
               className={`btn-primary hidden !px-6 !py-3 md:inline-flex ${
