@@ -48,7 +48,7 @@ export default function Bars() {
       />
 
       <div className="section-wrap relative z-20 flex items-center justify-between gap-4 pt-[5.5rem] pb-1 md:pt-[6.5rem] md:pb-2">
-        <span className="eyebrow opacity-70">El montaje</span>
+        <span className="eyebrow opacity-70">Nuestras barras</span>
         <span className="micro flex items-center gap-3 opacity-70">
           <span className="tabular-nums">{bar.index}</span>
           <span className="h-px w-8 bg-current opacity-40" />
@@ -64,34 +64,10 @@ export default function Bars() {
 
         <div className="section-wrap relative z-20 w-full shrink-0 pt-2 sm:max-w-md lg:col-span-4 lg:max-w-none lg:pt-0">
           <div key={bar.id} className="swap-in">
-            <span className="micro" style={{ color: bar.accent }}>
-              {bar.kicker}
-            </span>
-            <h2 className="display-lg mt-2 lg:mt-3">{bar.name}</h2>
+            <h2 className="display-lg">{bar.name}</h2>
             <p className="mt-3 hidden max-w-xs text-[0.82rem] leading-relaxed opacity-65 sm:block sm:text-sm lg:mt-5 lg:text-[0.95rem]">
               {bar.intro}
             </p>
-
-            <dl className="mt-7 hidden lg:block">
-              {bar.specs.map((spec) => (
-                <div key={spec.label} className="bar-stage__spec">
-                  <dt className="micro opacity-45">{spec.label}</dt>
-                  <dd className="text-sm">{spec.value}</dd>
-                </div>
-              ))}
-            </dl>
-
-            <ul className="mt-3 hidden flex-wrap gap-1.5 sm:mt-4 sm:flex sm:gap-2 lg:mt-8">
-              {bar.fits.map((fit) => (
-                <li
-                  key={fit}
-                  className="rounded-full border px-2.5 py-1 text-[9px] tracking-[0.14em] uppercase sm:px-3 sm:py-1.5 sm:text-[10px]"
-                  style={{ borderColor: `color-mix(in srgb, ${bar.ink} 22%, transparent)` }}
-                >
-                  {fit}
-                </li>
-              ))}
-            </ul>
           </div>
         </div>
 

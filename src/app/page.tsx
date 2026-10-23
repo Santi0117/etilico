@@ -7,7 +7,6 @@ import Carta from "@/components/Carta";
 import Events from "@/components/Events";
 import Nights from "@/components/Nights";
 import Process from "@/components/Process";
-import Testimonials from "@/components/Testimonials";
 import Reservation from "@/components/Reservation";
 import Footer from "@/components/Footer";
 import WhatsAppFloat from "@/components/WhatsAppFloat";
@@ -27,7 +26,6 @@ export default function Home() {
         <Events />
         <Nights />
         <Process />
-        <Testimonials />
         <Reservation />
       </main>
       <Footer />

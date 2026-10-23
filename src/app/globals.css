@@ -985,14 +985,14 @@
    ========================================================= */
 .night-dome {
   width: 100%;
-  height: min(68svh, 36rem);
-  min-height: 24rem;
+  height: min(74svh, 40rem);
+  min-height: 26rem;
 }
 
 @media (min-width: 768px) {
   .night-dome {
-    height: min(80svh, 48rem);
-    min-height: 34rem;
+    height: min(88svh, 54rem);
+    min-height: 36rem;
   }
 }
 

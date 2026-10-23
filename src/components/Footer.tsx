@@ -57,7 +57,16 @@ export default function Footer() {
                     Facebook {site.facebook}
                   </a>
                 </li>
-                <li className="text-ink-muted">{site.coverage}</li>
+                <li>
+                  <a
+                    href={`https://wa.me/${site.whatsapp}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="link-underline"
+                  >
+                    WhatsApp {site.whatsappDisplay}
+                  </a>
+                </li>
                 <li className="text-ink-faint">{site.hours}</li>
               </ul>
 

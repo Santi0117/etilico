@@ -11,7 +11,7 @@ const REEL = ["espresso-martini", "paloma", "negroni", "blue-lagoon", "margarita
 
 const stats = [
   { value: "500", suffix: "+", label: "Eventos servidos" },
-  { value: "5.3", suffix: "k", label: "En Instagram" },
+  { value: "5.3", suffix: "k", label: "Seguidores en Instagram" },
   { value: "3", suffix: "", label: "Barras propias" },
   { value: "CR", suffix: "", label: "Todo el país" },
 ];
@@ -103,9 +103,8 @@ export default function Hero() {
             <div className={`mt-9 max-w-md ${fade}`} style={show(600)}>
               <span className="block h-px w-14 bg-lima" />
               <p className="mt-6 text-[0.95rem] leading-relaxed text-ink-soft md:text-base">
-                Llevamos la barra, el equipo y los bartenders a tu boda, corporativo o
-                fiesta. Vos ponés la fecha y la lista de invitados; nosotros ponemos todo
-                lo demás.
+                Llevamos la barra, el equipo y los bartenders a tu evento, sea cual sea
+                la ocasión. Tú pones la fecha y los invitados; nosotros, todo lo demás.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <a href="#cotizar" className="btn-primary group">
@@ -197,8 +196,7 @@ export default function Hero() {
             ))}
           </dl>
 
-          <div className="mt-5 flex items-center justify-between gap-4">
-            <span className="micro text-ink-faint">Bodas · Corporativos · XV · Privadas</span>
+          <div className="mt-5 flex items-center justify-end gap-4">
             <span className="scroll-cue hidden h-10 w-px overflow-hidden bg-white/10 sm:block" aria-hidden>
               <i />
             </span>

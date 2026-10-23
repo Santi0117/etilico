@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     template: `%s | ${site.name}`,
   },
   description:
-    "Servicio de barra libre y coctelería para bodas, corporativos y fiestas en Costa Rica. Tres barras propias, bartenders, montaje y carta a la medida de tu evento.",
+    "Servicio de barra libre y coctelería para tu evento en Costa Rica. Tres barras propias, bartenders, montaje y carta a la medida.",
   keywords: [
     "barra libre Costa Rica",
     "coctelería para eventos",

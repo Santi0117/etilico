@@ -194,10 +194,10 @@ export default function DomeGallery({
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
-    const ro = new ResizeObserver((entries) => {
-      const cr = entries[0].contentRect;
-      const w = Math.max(1, cr.width);
-      const h = Math.max(1, cr.height);
+
+    const applySize = (width: number, height: number) => {
+      const w = Math.max(1, width);
+      const h = Math.max(1, height);
       const minDim = Math.min(w, h);
       const maxDim = Math.max(w, h);
       const aspect = w / h;
@@ -218,10 +218,11 @@ export default function DomeGallery({
         default:
           basis = aspect >= 1.3 ? w : minDim;
       }
+      const maxR = Number.isFinite(maxRadius) ? maxRadius : Number.POSITIVE_INFINITY;
       let radius = basis * fit;
       const heightGuard = h * 1.35;
       radius = Math.min(radius, heightGuard);
-      radius = clamp(radius, minRadius, maxRadius);
+      radius = clamp(radius, minRadius, maxR);
       lockedRadiusRef.current = Math.round(radius);
 
       const viewerPad = Math.max(8, Math.round(minDim * padFactor));
@@ -255,6 +256,14 @@ export default function DomeGallery({
           enlargedOverlay.style.height = `${frameR.height}px`;
         }
       }
+    };
+
+    const rect = root.getBoundingClientRect();
+    applySize(rect.width, rect.height);
+
+    const ro = new ResizeObserver((entries) => {
+      const cr = entries[0].contentRect;
+      applySize(cr.width, cr.height);
     });
     ro.observe(root);
     return () => ro.disconnect();

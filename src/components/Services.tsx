@@ -8,34 +8,28 @@ const includes = [
     n: "01",
     title: "Montaje y desmontaje",
     tag: "Llegamos y nos vamos",
-    text: "Llegamos antes, armamos la barra y nos llevamos todo al final. Vos no movés una caja.",
+    text: "Llegamos antes, armamos la barra y nos llevamos todo al final. Tú no mueves ni una caja.",
   },
   {
     n: "02",
     title: "Bartenders",
-    tag: "Equipo en casa",
-    text: "Equipo uniformado que sabe leer la fiesta y sostener el ritmo de servicio toda la noche.",
+    tag: "Equipo propio",
+    text: "Equipo de bartenders profesionales, preparados para servir toda la noche.",
   },
   {
     n: "03",
-    title: "Licores y mixers",
+    title: "Tragos y cocteles",
     tag: "La barra viaja llena",
-    text: "Selección nacional o importada según el paquete, con jugos, sodas y garnish fresco.",
+    text: "Desde tragos sencillos hasta cocteles de autor, con licores nacionales e importados.",
   },
   {
     n: "04",
-    title: "Hielo y cristalería",
-    tag: "Sin vasos plásticos",
-    text: "Hielo suficiente, cristalería real y reposición constante durante todo el servicio.",
+    title: "Carta a la medida",
+    tag: "Tragos de tu evento",
+    text: "Tú eliges qué tragos van a estar en tu evento y armamos la carta a tu gusto.",
   },
   {
     n: "05",
-    title: "Carta a la medida",
-    tag: "Tragos de tu evento",
-    text: "Elegimos juntos los tragos del evento, incluida la opción sin alcohol para todos.",
-  },
-  {
-    n: "06",
     title: "Transporte",
     tag: "Todo Costa Rica",
     text: "San José, Guanacaste, Puntarenas o donde sea la fiesta. La barra viaja con nosotros.",
@@ -63,8 +57,8 @@ export default function Services() {
               </h2>
             </div>
             <div className="max-w-xs">
-              <p className="font-display text-5xl text-ink">+500</p>
-              <p className="micro mt-2 text-ink-faint">Eventos servidos en Costa Rica</p>
+              <p className="font-display text-5xl text-ink">CR</p>
+              <p className="micro mt-2 text-ink-faint">Armando barras en Costa Rica</p>
               <p className="mt-4 text-sm leading-relaxed text-ink-muted">
                 No somos un bar al que vas: somos el servicio que llega a tu celebración con
                 todo listo para brindar.

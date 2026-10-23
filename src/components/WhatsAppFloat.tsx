@@ -13,7 +13,7 @@ export default function WhatsAppFloat() {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Escribinos por WhatsApp"
+      aria-label="Escríbenos por WhatsApp"
       className="group fixed right-4 bottom-4 z-[80] flex items-center gap-0 overflow-hidden rounded-full border border-white/15 bg-noche/85 py-3 pr-3 pl-3 text-ink shadow-2xl shadow-black/50 backdrop-blur-xl transition-all duration-500 ease-[var(--ease-luxe)] hover:border-lima/60 hover:text-lima md:right-6 md:bottom-6"
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="currentColor" aria-hidden>

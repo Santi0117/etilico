@@ -79,23 +79,13 @@ export default function Carta() {
         </span>
       </div>
 
-      <div className="section-wrap relative z-10 mt-8 grid gap-6 md:mt-10 md:grid-cols-12 md:items-end">
-        <div className="md:col-span-7">
-          <h2 key={drink.id} className="display-lg swap-in text-ink">
-            {drink.name}
-          </h2>
-          <p className="micro mt-3 text-lima">
-            {drink.base} <span className="text-ink-faint">·</span> {drink.build}
-          </p>
-        </div>
-        <div className="md:col-span-5">
-          <p
-            key={drink.id + "-n"}
-            className="swap-in max-w-sm text-sm leading-relaxed text-ink-soft md:ml-auto md:text-right"
-          >
-            {drink.note}
-          </p>
-        </div>
+      <div className="section-wrap relative z-10 mt-8 md:mt-10">
+        <h2 key={drink.id} className="display-lg swap-in text-ink">
+          {drink.name}
+        </h2>
+        <p className="micro mt-3 text-lima">
+          {drink.base} <span className="text-ink-faint">·</span> {drink.build}
+        </p>
       </div>
 
       <div className="relative z-10 mt-10 md:mt-14">
@@ -208,10 +198,9 @@ export default function Carta() {
         <div className="carta__progress">
           <i style={{ width: `${((idx + 1) / cocktails.length) * 100}%` }} />
         </div>
-        <div className="mt-3 flex items-center justify-between gap-4">
-          <span className="micro text-ink-faint">Clásicos · de autor · sin alcohol</span>
-          <span className="micro hidden text-ink-faint md:block">Arrastrá o usá las flechas</span>
-          <span className="micro text-ink-faint md:hidden">Deslizá para ver más</span>
+        <div className="mt-3 flex items-center justify-end gap-4">
+          <span className="micro hidden text-ink-faint md:block">Arrastra o usa las flechas</span>
+          <span className="micro text-ink-faint md:hidden">Desliza para ver más</span>
         </div>
       </div>
     </section>

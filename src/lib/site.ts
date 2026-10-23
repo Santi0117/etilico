@@ -12,11 +12,11 @@ export const site = {
   facebook: "Etílico Cocktails & Drinks",
   facebookUrl: "https://www.facebook.com/etilico.cr",
   /** Agregar número cuando lo confirmen. Vacío = CTA por Instagram. */
-  whatsapp: "",
+  whatsapp: "50660441110",
+  whatsappDisplay: "+506 6044 1110",
   phone: "",
   email: "",
-  hours: "Eventos en todo Costa Rica · Cotizaciones por Instagram",
-  coverage: "Todo Costa Rica",
-  bio: "Servicio de barra libre y coctelería para todo tipo de eventos. Llevamos la barra, el equipo y los bartenders a tu boda, corporativo o fiesta.",
+  hours: "Eventos en todo Costa Rica · Cotizaciones por WhatsApp e Instagram",
+  bio: "Servicio de barra libre y coctelería para todo tipo de eventos. Llevamos la barra, el equipo y los bartenders a tu evento, sea cual sea la ocasión.",
   ceo: "@adrian_sanchez_77",
 } as const;

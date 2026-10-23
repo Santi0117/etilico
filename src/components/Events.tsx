@@ -9,7 +9,7 @@ const events = [
   },
   {
     title: "Corporativos",
-    text: "Lanzamientos, cenas de fin de año y after office con presencia de marca.",
+    text: "Lanzamientos, fiestas de fin de año y after office con el logo de tu empresa en la barra.",
     image: "/nights/lamp.webp",
     pos: "center 62%",
   },
@@ -21,13 +21,13 @@ const events = [
   },
   {
     title: "Graduaciones",
-    text: "Celebrá el logro con cocteles, shots y una barra que aguanta la noche.",
+    text: "Celebra el logro con cocteles, shots y una barra que aguanta toda la noche.",
     image: "/nights/team.webp",
     pos: "center 42%",
   },
   {
     title: "Fiestas privadas",
-    text: "En casa, quinta o rooftop. Llevamos todo y nos adaptamos al espacio.",
+    text: "En casa, quinta o terraza. Llevamos todo y nos adaptamos al espacio.",
     image: "/nights/floral.webp",
     pos: "center 58%",
   },

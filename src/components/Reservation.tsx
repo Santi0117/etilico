@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import EventCalendar, { formatLong } from "./EventCalendar";
 import Reveal from "./Reveal";
 import { bars } from "@/lib/bars";
 import { cantons, provinces, type Province } from "@/lib/costa-rica";
+import { enviarReservaAlPortal } from "@/lib/portal-reserva";
 import { site } from "@/lib/site";
 
 const eventTypes = [
@@ -14,10 +15,18 @@ const eventTypes = [
   "Graduación",
   "Cumpleaños",
   "Fiesta privada",
+  "Otro",
 ];
 
-const GUEST_PRESETS = [1, 10, 25, 50, 100, 150, 250];
-const HOUR_PRESETS = [1, 2, 3, 4, 5, 6, 8];
+const GUEST_PRESETS = [30, 50, 100, 150, 200, 250];
+const HOUR_PRESETS = [3, 4, 5, 6, 8];
+const MIN_GUESTS = 30;
+const MIN_HOURS = 3;
+
+function whatsappHref(text: string) {
+  const encoded = encodeURIComponent(text);
+  return site.whatsapp ? `https://wa.me/${site.whatsapp}?text=${encoded}` : `https://wa.me/?text=${encoded}`;
+}
 
 function Stepper({
   label,
@@ -142,6 +151,8 @@ export default function Reservation() {
   const [confirmed, setConfirmed] = useState(false);
   const [copied, setCopied] = useState(false);
   const [touched, setTouched] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const guardado = useRef(false);
 
   const cantonOptions = province ? cantons[province as Province] : [];
   const barName = bars.find((b) => b.id === barId)?.name ?? "A recomendación de Etílico";
@@ -175,13 +186,33 @@ export default function Reservation() {
 
   const missing = !date || !name.trim() || !province || !canton;
 
-  function submit(e: React.FormEvent) {
+  async function guardar() {
+    if (guardado.current || !date) return;
+    const aviso = await enviarReservaAlPortal({
+      date,
+      guests,
+      hours,
+      eventType,
+      barName,
+      province,
+      canton,
+      name,
+      phone,
+      notes,
+    });
+    if (!aviso) guardado.current = true;
+  }
+
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
     setTouched(true);
-    if (missing) {
+    if (missing || saving) {
       if (!date) document.getElementById("cotizar")?.scrollIntoView({ behavior: "smooth" });
       return;
     }
+    setSaving(true);
+    await guardar();
+    setSaving(false);
     setConfirmed(true);
   }
 
@@ -216,10 +247,10 @@ export default function Reservation() {
             <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-lima/40 text-2xl text-lima">
               ✓
             </span>
-            <h2 className="display-lg mt-8 text-ink">Reserva enviada</h2>
+            <h2 className="display-lg mt-8 text-ink">Último paso</h2>
             <p className="mt-5 text-sm leading-relaxed text-ink-muted md:text-base">
-              Ya tenemos tu fecha, el tamaño del evento y las horas de barra. El último
-              paso es hablarlo con calma para cerrar el montaje.
+              Tu evento ya está armado. Envíanos este resumen y te respondemos con el
+              precio y si la fecha está libre.
             </p>
 
             <dl className="mt-10 text-left">
@@ -235,25 +266,25 @@ export default function Reservation() {
             </dl>
 
             <div className="mt-10 flex flex-col gap-3">
-              {site.whatsapp ? (
-                <a
-                  href={`https://wa.me/${site.whatsapp}?text=${encodeURIComponent(message)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary"
-                >
-                  Seguir por WhatsApp
-                </a>
-              ) : (
-                <a
-                  href={site.instagramDm}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-primary"
-                >
-                  Enviar por Instagram
-                </a>
-              )}
+              <a
+                href={whatsappHref(message)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary"
+                onClick={() => {
+                  void guardar();
+                }}
+              >
+                Enviar por WhatsApp
+              </a>
+              <a
+                href={site.instagramDm}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-secondary text-ink"
+              >
+                Enviar por Instagram
+              </a>
               <button type="button" onClick={copy} className="btn-secondary text-ink">
                 {copied ? "Resumen copiado ✓" : "Copiar resumen del evento"}
               </button>
@@ -295,14 +326,10 @@ export default function Reservation() {
             <div className="max-w-xl">
               <span className="eyebrow text-lima">Reserva</span>
               <h2 className="display-lg mt-5 text-ink">
-                Contanos del evento
+                Cuéntanos del evento
                 <span className="block text-ink-faint italic">y armamos la barra.</span>
               </h2>
             </div>
-            <p className="max-w-xs text-sm leading-relaxed text-ink-muted">
-              Fecha, cuánta gente y cuántas horas de servicio. Con esos tres datos ya
-              podemos cotizar el montaje completo.
-            </p>
           </div>
         </Reveal>
 
@@ -316,7 +343,7 @@ export default function Reservation() {
                     date ? "text-lima" : touched ? "text-red-300/80" : "text-ink-faint"
                   }`}
                 >
-                  {date ? formatLong(date) : "Elegí el día de tu evento"}
+                  {date ? formatLong(date) : "Elige el día de tu evento"}
                 </p>
               </div>
             </Block>
@@ -326,9 +353,9 @@ export default function Reservation() {
                 <div className="grid gap-8 sm:grid-cols-2 sm:gap-8 lg:gap-10">
                   <Stepper
                     label="Cantidad de personas"
-                    hint="Desde 1 invitado. Tocá el número y escribí el que sea."
+                    hint="Desde 30 invitados. Toca el número y escribe el que sea."
                     value={guests}
-                    min={1}
+                    min={MIN_GUESTS}
                     max={600}
                     step={1}
                     presets={GUEST_PRESETS}
@@ -338,9 +365,9 @@ export default function Reservation() {
                   <div className="border-t border-white/10 pt-8 sm:border-t-0 sm:border-l sm:pt-0 sm:pl-8 lg:pl-10">
                     <Stepper
                       label="Horas de servicio"
-                      hint="Desde 1 hora de barra. También se puede escribir."
+                      hint="Desde 3 horas de barra. También se puede escribir."
                       value={hours}
-                      min={1}
+                      min={MIN_HOURS}
                       max={12}
                       step={1}
                       presets={HOUR_PRESETS}
@@ -366,7 +393,7 @@ export default function Reservation() {
                 ))}
               </div>
 
-              <p className="micro mt-8 text-ink-faint">¿Cuál barra querés?</p>
+              <p className="micro mt-8 text-ink-faint">¿Qué barra quieres?</p>
               <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {bars.map((bar) => (
                   <button
@@ -422,7 +449,7 @@ export default function Reservation() {
                       }}
                       className="input-field mt-2 normal-case"
                     >
-                      <option value="">Elegí provincia</option>
+                      <option value="">Elige la provincia</option>
                       {provinces.map((item) => (
                         <option key={item} value={item}>
                           {item}
@@ -439,7 +466,7 @@ export default function Reservation() {
                       disabled={!province}
                       className="input-field mt-2 normal-case disabled:opacity-40"
                     >
-                      <option value="">{province ? "Elegí cantón" : "Primero la provincia"}</option>
+                      <option value="">{province ? "Elige el cantón" : "Primero la provincia"}</option>
                       {cantonOptions.map((item) => (
                         <option key={item} value={item}>
                           {item}
@@ -533,8 +560,8 @@ export default function Reservation() {
               </div>
 
               <div className="border-t border-white/10 p-6 sm:p-7">
-                <button type="submit" className="btn-primary w-full">
-                  Solicitar reserva
+                <button type="submit" className="btn-primary w-full" disabled={saving}>
+                  {saving ? "Enviando cotización…" : "Pedir mi cotización"}
                 </button>
                 {touched && missing && (
                   <p className="mt-4 text-center text-xs text-red-300/80">
@@ -542,7 +569,8 @@ export default function Reservation() {
                   </p>
                 )}
                 <p className="mt-4 text-center text-xs text-ink-faint">
-                  Sin compromiso. Te respondemos con el detalle del montaje.
+                  Sin compromiso. Te respondemos en menos de 24 horas con el precio y el
+                  detalle del montaje.
                 </p>
               </div>
             </div>
