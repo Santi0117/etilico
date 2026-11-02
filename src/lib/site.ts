@@ -11,6 +11,8 @@ export const site = {
   instagramDm: "https://ig.me/m/etilico.cr",
   facebook: "Etílico Cocktails & Drinks",
   facebookUrl: "https://www.facebook.com/etilico.cr",
+  /** Meta Pixel (Events Manager). Público: va en el HTML del sitio. */
+  facebookPixelId: "1439807901461831",
   /** Agregar número cuando lo confirmen. Vacío = CTA por Instagram. */
   whatsapp: "50660441110",
   whatsappDisplay: "+506 6044 1110",

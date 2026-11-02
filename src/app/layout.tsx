@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bodoni_Moda, Outfit } from "next/font/google";
+import FacebookPixel from "@/components/FacebookPixel";
 import Preloader from "@/components/Preloader";
 import { site } from "@/lib/site";
 import { siteUrl } from "@/lib/site-url";
@@ -57,6 +58,7 @@ export default function RootLayout({
   return (
     <html lang="es" className={`${outfit.variable} ${bodoni.variable} h-full`}>
       <body className="flex min-h-full w-full max-w-full flex-col overflow-x-clip antialiased">
+        <FacebookPixel />
         <Preloader />
         {children}
       </body>
