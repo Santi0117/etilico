@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import TrustMarquee from "@/components/TrustMarquee";
 import Bars from "@/components/Bars";
 import Services from "@/components/Services";
 import Carta from "@/components/Carta";
@@ -19,7 +18,6 @@ export default function Home() {
       <Header />
       <main className="w-full max-w-full">
         <Hero />
-        <TrustMarquee />
         <Bars />
         <Services />
         <Carta />

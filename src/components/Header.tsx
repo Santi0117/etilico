@@ -88,9 +88,9 @@ export default function Header() {
             : "border-b border-transparent"
         }`}
       >
-        <div className="section-wrap flex h-[4.5rem] items-center justify-between gap-4 md:h-20">
-          <a href="#inicio" aria-label="Inicio" className="relative z-10 min-w-0 shrink">
-            <Logo />
+        <div className="section-wrap relative flex h-[4.5rem] items-center justify-between gap-4 md:h-20 lg:grid lg:grid-cols-[1fr_auto_1fr]">
+          <a href="#inicio" aria-label="Inicio" className="relative z-10 min-w-0 shrink justify-self-start">
+            <Logo variant="stacked" mono className="text-[13px] sm:text-[15px]" />
           </a>
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Principal">
@@ -103,10 +103,17 @@ export default function Header() {
                 {link.label}
               </a>
             ))}
-            <InstagramLink light={light} className="ml-2" />
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* filete bajo el menú, dentro del ancho del contenido, solo arriba del todo */}
+          <span
+            className={`pointer-events-none absolute inset-x-5 bottom-0 h-px bg-current transition-opacity duration-700 sm:inset-x-8 lg:inset-x-12 ${
+              scrolled || open ? "opacity-0" : "opacity-[0.12]"
+            }`}
+            aria-hidden
+          />
+
+          <div className="flex items-center gap-2 justify-self-end sm:gap-3">
             <InstagramLink light={light} className="lg:hidden" />
             <a
               href="#cotizar"

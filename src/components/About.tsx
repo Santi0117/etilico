@@ -29,7 +29,7 @@ export default function About() {
             <div className="relative overflow-hidden rounded-[1.5rem] border border-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/cocteles/07.webp"
+                src="/cocteles/moscow-mule.webp"
                 alt="Moscow Mule servido en taza de cobre por el equipo de Etílico"
                 width={1022}
                 height={1280}
@@ -40,7 +40,7 @@ export default function About() {
             <div className="absolute -right-3 -bottom-8 w-28 overflow-hidden rounded-xl border border-white/15 shadow-2xl shadow-black/60 sm:-right-7 sm:-bottom-10 sm:w-40">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/cocteles/09-sm.webp"
+                src="/cocteles/margarita-chamoy-sm.webp"
                 alt="Margarita con borde de chamoy"
                 width={560}
                 height={701}

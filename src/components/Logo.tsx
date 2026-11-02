@@ -2,6 +2,8 @@ type LogoProps = {
   variant?: "inline" | "stacked" | "seal";
   className?: string;
   tagline?: boolean;
+  /** Sin el verde de marca: todo en el color del texto. */
+  mono?: boolean;
 };
 
 /** Copa que reemplaza la Í, igual que en Instagram y en el frente de la barra. */
@@ -24,9 +26,11 @@ function Martini({ className = "" }: { className?: string }) {
 function Wordmark({
   tagline,
   compact = false,
+  mono = false,
 }: {
   tagline: boolean;
   compact?: boolean;
+  mono?: boolean;
 }) {
   return (
     <span className="inline-flex flex-col items-start leading-none">
@@ -49,7 +53,7 @@ function Wordmark({
       </span>
       {tagline ? (
         <span
-          className={`font-[family-name:var(--font-outfit)] font-medium tracking-[0.42em] text-lima uppercase ${
+          className={`font-[family-name:var(--font-outfit)] font-medium tracking-[0.42em] uppercase ${mono ? "opacity-60" : "text-lima"} ${
             compact ? "mt-[0.42em] text-[0.22em]" : "mt-[0.48em] text-[0.16em]"
           }`}
         >
@@ -64,11 +68,12 @@ export default function Logo({
   variant = "inline",
   className = "",
   tagline = true,
+  mono = false,
 }: LogoProps) {
   if (variant === "stacked") {
     return (
       <span className={`inline-block text-[1em] leading-none ${className}`}>
-        <Wordmark tagline={tagline} />
+        <Wordmark tagline={tagline} mono={mono} />
       </span>
     );
   }

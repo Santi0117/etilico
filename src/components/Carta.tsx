@@ -1,207 +1,154 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import { cocktails } from "@/lib/cocktails";
+import CocktailStage from "./CocktailStage";
+
+const total = cocktails.length;
+const wrap = (n: number) => (n + total) % total;
 
 export default function Carta() {
-  const scrollerRef = useRef<HTMLDivElement>(null);
-  const [idx, setIdx] = useState(0);
-  const drag = useRef<{
-    id: number;
-    startX: number;
-    startLeft: number;
-    moved: boolean;
-  } | null>(null);
+  const [view, setView] = useState<{ i: number; dir: 1 | -1 }>({ i: 0, dir: 1 });
+  const railRef = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ id: number; x: number; left: number; moved: boolean } | null>(null);
   const skipClick = useRef(false);
+  const [dragging, setDragging] = useState(false);
 
-  const syncIndex = useCallback(() => {
-    const root = scrollerRef.current;
-    if (!root) return;
-    const mid = root.scrollLeft + root.clientWidth / 2;
-    let best = 0;
-    let bestDelta = Infinity;
-    Array.from(root.children).forEach((node, i) => {
-      const el = node as HTMLElement;
-      const center = el.offsetLeft + el.offsetWidth / 2;
-      const d = Math.abs(center - mid);
-      if (d < bestDelta) {
-        bestDelta = d;
-        best = i;
-      }
-    });
-    setIdx((cur) => (cur === best ? cur : best));
-  }, []);
+  const step = useCallback((dir: 1 | -1) => setView((v) => ({ i: wrap(v.i + dir), dir })), []);
+  const pick = useCallback(
+    (i: number) => setView((v) => (i === v.i ? v : { i, dir: i > v.i ? 1 : -1 })),
+    [],
+  );
 
-  const goTo = useCallback((next: number) => {
-    const root = scrollerRef.current;
-    if (!root) return;
-    const clamped = Math.max(0, Math.min(cocktails.length - 1, next));
-    const card = root.children[clamped] as HTMLElement | undefined;
-    if (card) {
-      const left = card.offsetLeft - (root.clientWidth - card.offsetWidth) / 2;
-      root.scrollTo({ left: Math.max(0, left), behavior: "smooth" });
-    }
-    setIdx(clamped);
-  }, []);
-
+  // el trago elegido queda centrado en el riel, sin mover la página
   useEffect(() => {
-    const root = scrollerRef.current;
-    if (!root) return;
-    const onScroll = () => syncIndex();
-    root.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    const boot = requestAnimationFrame(() => goTo(0));
-    return () => {
-      cancelAnimationFrame(boot);
-      root.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [goTo, syncIndex]);
+    const rail = railRef.current;
+    const btn = rail?.children[view.i] as HTMLElement | undefined;
+    if (!rail || !btn) return;
+    rail.scrollTo({ left: btn.offsetLeft - (rail.clientWidth - btn.offsetWidth) / 2, behavior: "smooth" });
+  }, [view.i]);
 
-  const drink = cocktails[idx] ?? cocktails[0];
+  const drink = cocktails[view.i];
+  const parts = drink.build.split(" · ").map((p) => p.charAt(0).toUpperCase() + p.slice(1));
 
   return (
     <section
       id="carta"
       aria-label="Carta de cocteles"
-      className="carta relative overflow-hidden bg-noche pt-24 pb-16 md:pt-32 md:pb-20"
-      style={{ ["--carta-tint" as string]: drink.tint }}
+      className="carta relative overflow-hidden bg-noche pt-20 pb-12 md:pb-14"
+      style={{ ["--carta-tint" as string]: drink.tint } as CSSProperties}
     >
+      <div className="stage-lines" aria-hidden />
       <span className="carta__aura" aria-hidden />
-      <div className="grain pointer-events-none absolute inset-0 z-[1] opacity-[0.16] mix-blend-overlay" aria-hidden />
+      <div className="grain pointer-events-none absolute inset-0 z-[1] opacity-[0.12] mix-blend-overlay" aria-hidden />
 
-      <div className="section-wrap relative z-10 flex items-center justify-between gap-4">
-        <span className="eyebrow text-ink-muted">La carta</span>
-        <span className="micro flex items-center gap-3 text-ink-muted">
-          <span className="tabular-nums text-lima">{drink.n}</span>
-          <span className="h-px w-8 bg-current opacity-40" />
-          <span className="tabular-nums">{String(cocktails.length).padStart(2, "0")}</span>
-        </span>
+      <div className="section-wrap relative z-10">
+        <div className="grid items-center gap-6 lg:grid-cols-12 lg:gap-10">
+          <header className="lg:col-span-5 lg:self-end xl:col-span-4">
+            <span className="eyebrow text-ink-muted">La carta</span>
+            <h2 className="font-display mt-4 text-[clamp(1.6rem,2.6vw,2.2rem)] leading-[1.05] text-ink">
+              {total} tragos, <span className="text-ink-soft italic">una sola barra.</span>
+            </h2>
+          </header>
+
+          <div className="order-3 lg:order-none lg:col-span-7 lg:row-span-2 xl:col-span-8">
+            <CocktailStage
+              drink={drink}
+              dir={view.dir}
+              onPrev={() => step(-1)}
+              onNext={() => step(1)}
+              preload={[cocktails[wrap(view.i + 1)], cocktails[wrap(view.i - 1)]]}
+              className="stage--carta"
+              label="Carta de cocteles"
+            />
+          </div>
+
+          <div className="order-4 lg:order-none lg:col-span-5 lg:self-start xl:col-span-4">
+            <div key={drink.id} className="swap-in border-t border-white/10 pt-6">
+              <p className="micro flex items-center justify-between gap-4 text-ink-muted">
+                {drink.base}
+                <span className="tabular-nums text-ink-faint">
+                  <span className="text-ink">{drink.n}</span> / {String(total).padStart(2, "0")}
+                </span>
+              </p>
+              <h3 className="display-lg mt-3 text-ink">{drink.name}</h3>
+              <ul className="carta__build" aria-label="Lleva">
+                {parts.map((part) => (
+                  <li key={part}>{part}</li>
+                ))}
+              </ul>
+              <p className="mt-6 max-w-sm text-[0.95rem] leading-relaxed text-ink-soft">{drink.note}</p>
+            </div>
+            <a href="#cotizar" className="btn-secondary mt-8 !px-6 !py-3.5 text-ink">
+              Lo quiero en mi evento
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div className="section-wrap relative z-10 mt-8 md:mt-10">
-        <h2 key={drink.id} className="display-lg swap-in text-ink">
-          {drink.name}
-        </h2>
-        <p className="micro mt-3 text-lima">
-          {drink.base} <span className="text-ink-faint">·</span> {drink.build}
-        </p>
-      </div>
-
-      <div className="relative z-10 mt-10 md:mt-14">
-        <button
-          type="button"
-          className="carta__arrow carta__arrow--prev"
-          aria-label="Trago anterior"
-          disabled={idx <= 0}
-          onClick={() => goTo(idx - 1)}
-        >
-          ←
-        </button>
-        <button
-          type="button"
-          className="carta__arrow carta__arrow--next"
-          aria-label="Trago siguiente"
-          disabled={idx >= cocktails.length - 1}
-          onClick={() => goTo(idx + 1)}
-        >
-          →
-        </button>
-
-        <div
-          ref={scrollerRef}
-          className="carta__scroller"
-          onPointerDown={(e) => {
-            if (e.pointerType === "touch") return;
-            const root = scrollerRef.current;
-            if (!root) return;
-            drag.current = {
-              id: e.pointerId,
-              startX: e.clientX,
-              startLeft: root.scrollLeft,
-              moved: false,
-            };
-            root.setPointerCapture(e.pointerId);
-          }}
-          onPointerMove={(e) => {
-            const root = scrollerRef.current;
-            const d = drag.current;
-            if (!root || !d || d.id !== e.pointerId) return;
-            const dx = e.clientX - d.startX;
-            if (Math.abs(dx) > 6) d.moved = true;
-            if (d.moved) {
-              root.scrollLeft = d.startLeft - dx;
-            }
-          }}
-          onPointerUp={(e) => {
-            const d = drag.current;
-            if (d && d.id === e.pointerId) {
-              if (d.moved) skipClick.current = true;
-              drag.current = null;
-              const root = scrollerRef.current;
-              if (d.moved && root) {
-                const cards = Array.from(root.children) as HTMLElement[];
-                const mid = root.scrollLeft + root.clientWidth / 2;
-                let best = 0;
-                let bestDelta = Infinity;
-                cards.forEach((card, i) => {
-                  const center = card.offsetLeft + card.offsetWidth / 2;
-                  const delta = Math.abs(center - mid);
-                  if (delta < bestDelta) {
-                    bestDelta = delta;
-                    best = i;
-                  }
-                });
-                goTo(best);
+      <div
+        ref={railRef}
+        className={`carta__rail relative z-10 mt-8 ${dragging ? "is-dragging" : ""}`}
+        role="group"
+        aria-label="Todos los tragos"
+        onPointerDown={(e) => {
+          if (e.pointerType !== "mouse" || e.button !== 0) return;
+          drag.current = { id: e.pointerId, x: e.clientX, left: e.currentTarget.scrollLeft, moved: false };
+        }}
+        onPointerMove={(e) => {
+          const d = drag.current;
+          if (!d || d.id !== e.pointerId) return;
+          const dx = e.clientX - d.x;
+          if (!d.moved && Math.abs(dx) > 6) {
+            d.moved = true;
+            setDragging(true);
+            e.currentTarget.setPointerCapture(e.pointerId);
+          }
+          if (d.moved) e.currentTarget.scrollLeft = d.left - dx;
+        }}
+        onPointerUp={(e) => {
+          const d = drag.current;
+          drag.current = null;
+          if (d?.moved) {
+            // el clic que cierra el arrastre no elige trago
+            skipClick.current = true;
+            window.setTimeout(() => (skipClick.current = false), 0);
+            setDragging(false);
+            e.currentTarget.releasePointerCapture(e.pointerId);
+          }
+        }}
+      >
+        {cocktails.map((c, i) => (
+          <button
+            key={c.id}
+            type="button"
+            aria-pressed={i === view.i}
+            aria-label={c.name}
+            className={`carta__pick ${i === view.i ? "is-on" : ""}`}
+            onClick={() => {
+              if (skipClick.current) {
+                skipClick.current = false;
+                return;
               }
-            }
-          }}
-        >
-          {cocktails.map((c, i) => (
-            <article
-              key={c.id}
-              className={`carta__card ${i === idx ? "is-live" : ""}`}
-              onClick={() => {
-                if (skipClick.current) {
-                  skipClick.current = false;
-                  return;
-                }
-                goTo(i);
-              }}
-            >
-              <div className="carta__shot">
-                <span className="carta__num">{c.n}</span>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={c.thumb}
-                  srcSet={`${c.thumb} 560w, ${c.image} 1100w`}
-                  sizes="(min-width: 1024px) 22rem, 70vw"
-                  alt={`${c.name} · coctelería Etílico`}
-                  loading={i < 3 ? "eager" : "lazy"}
-                  decoding="async"
-                  draggable={false}
-                  width={560}
-                  height={701}
-                />
-                <span className="carta__ring" aria-hidden />
-              </div>
-              <div className="mt-4 flex items-baseline justify-between gap-3">
-                <span className="font-display text-xl text-ink">{c.name}</span>
-                <span className="micro text-ink-faint">{c.base}</span>
-              </div>
-            </article>
-          ))}
-        </div>
-      </div>
-
-      <div className="section-wrap relative z-10 mt-8">
-        <div className="carta__progress">
-          <i style={{ width: `${((idx + 1) / cocktails.length) * 100}%` }} />
-        </div>
-        <div className="mt-3 flex items-center justify-end gap-4">
-          <span className="micro hidden text-ink-faint md:block">Arrastra o usa las flechas</span>
-          <span className="micro text-ink-faint md:hidden">Desliza para ver más</span>
-        </div>
+              pick(i);
+            }}
+          >
+            <span className="carta__pick-cut">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={c.thumb}
+                alt=""
+                width={c.width}
+                height={c.height}
+                loading="lazy"
+                decoding="async"
+                draggable={false}
+                style={{ height: `${Math.round((0.3 + 0.7 * c.scale) * 100)}%` }}
+              />
+            </span>
+            <span className="carta__pick-name">{c.name}</span>
+          </button>
+        ))}
       </div>
     </section>
   );

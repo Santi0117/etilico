@@ -10,9 +10,8 @@ const MAX_MS = 4600;
 /** Assets que vale la pena tener listos antes de abrir el telón. */
 const WARMUP = [
   "/barras/case.webp",
-  "/cocteles/11-sm.webp",
-  "/cocteles/11.webp",
-  "/cocteles/01-sm.webp",
+  "/cocteles/negroni.webp",
+  "/cocteles/espresso-martini.webp",
 ];
 
 function wavePath(progress: number, phase: number) {
