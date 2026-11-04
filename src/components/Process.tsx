@@ -14,7 +14,7 @@ const steps = [
   {
     n: "03",
     title: "Ajuste de carta",
-    text: "Eliges clásicos, cocteles de autor, welcome drink y opciones sin alcohol. Todo queda cerrado antes del evento.",
+    text: "Eliges clásicos, cocteles de autor y welcome drink. Todo queda cerrado antes del evento.",
   },
   {
     n: "04",

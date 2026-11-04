@@ -21,7 +21,7 @@ const events = [
   },
   {
     title: "Graduaciones",
-    text: "Celebra el logro con cocteles, shots y una barra que aguanta toda la noche.",
+    text: "Celebra el logro con cocteles y una barra que aguanta toda la noche.",
     image: "/nights/team.webp",
     pos: "center 42%",
   },

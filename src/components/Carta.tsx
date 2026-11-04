@@ -92,11 +92,11 @@ export default function Carta() {
       <header className="carta__intro">
         <p className="eyebrow text-ink-muted">La carta · Costa Rica</p>
         <h2 className="carta__title">
-          Treinta tragos,
+          Veintisiete tragos,
           <span className="block text-lima italic">una sola barra.</span>
         </h2>
         <p className="carta__lede">
-          Clásicos, firmas de la casa y opciones sin alcohol. Escoge los que quieras para tu barra.
+          Clásicos y firmas de la casa. Escoge los que quieras para tu barra.
         </p>
       </header>
 

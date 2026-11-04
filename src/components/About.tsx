@@ -40,10 +40,10 @@ export default function About() {
             <div className="absolute -right-3 -bottom-8 w-28 overflow-hidden rounded-xl border border-white/15 shadow-2xl shadow-black/60 sm:-right-7 sm:-bottom-10 sm:w-40">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/cocteles/margarita-chamoy-sm.webp"
-                alt="Margarita con borde de chamoy"
-                width={560}
-                height={701}
+                src="/cocteles/margarita-sm.webp"
+                alt="Margarita con borde de tajín"
+                width={308}
+                height={420}
                 loading="lazy"
                 className="aspect-[4/5] w-full object-cover"
               />
