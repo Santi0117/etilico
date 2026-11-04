@@ -1,154 +1,212 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
-import { cocktails } from "@/lib/cocktails";
-import CocktailStage from "./CocktailStage";
+import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { groups, inGroup, type GroupId } from "@/lib/cocktails";
 
-const total = cocktails.length;
-const wrap = (n: number) => (n + total) % total;
+/** Distancia con signo al trago del centro, dando la vuelta por el otro lado. */
+function offset(i: number, center: number, n: number) {
+  let d = i - center;
+  if (d > n / 2) d -= n;
+  if (d < -n / 2) d += n;
+  return d;
+}
+
+const wrap = (i: number, n: number) => ((i % n) + n) % n;
+const pad = (n: number) => String(n).padStart(2, "0");
 
 export default function Carta() {
-  const [view, setView] = useState<{ i: number; dir: 1 | -1 }>({ i: 0, dir: 1 });
-  const railRef = useRef<HTMLDivElement>(null);
-  const drag = useRef<{ id: number; x: number; left: number; moved: boolean } | null>(null);
-  const skipClick = useRef(false);
-  const [dragging, setDragging] = useState(false);
+  const [group, setGroup] = useState<GroupId>("todos");
+  const [idx, setIdx] = useState(0);
+  /** Arrastre en curso: cuánto se movió el dedo y cuánto mide un paso. */
+  const [drag, setDrag] = useState<{ dx: number; step: number } | null>(null);
+  const dragging = drag !== null;
+  const reel = useRef<HTMLDivElement>(null);
+  const section = useRef<HTMLElement>(null);
+  const press = useRef<{ id: number; x: number; step: number; moved: boolean } | null>(null);
+  const inView = useRef(false);
 
-  const step = useCallback((dir: 1 | -1) => setView((v) => ({ i: wrap(v.i + dir), dir })), []);
-  const pick = useCallback(
-    (i: number) => setView((v) => (i === v.i ? v : { i, dir: i > v.i ? 1 : -1 })),
-    [],
-  );
+  const list = useMemo(() => inGroup(group), [group]);
+  const n = list.length;
+  const drink = list[wrap(idx, n)];
 
-  // el trago elegido queda centrado en el riel, sin mover la página
+  const go = useCallback((to: number) => setIdx(wrap(to, n)), [n]);
+
+  // flechas del teclado mientras la carta está en pantalla
   useEffect(() => {
-    const rail = railRef.current;
-    const btn = rail?.children[view.i] as HTMLElement | undefined;
-    if (!rail || !btn) return;
-    rail.scrollTo({ left: btn.offsetLeft - (rail.clientWidth - btn.offsetWidth) / 2, behavior: "smooth" });
-  }, [view.i]);
+    const el = section.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => (inView.current = e.intersectionRatio > 0.45), {
+      threshold: [0, 0.45, 1],
+    });
+    io.observe(el);
+    const onKey = (e: KeyboardEvent) => {
+      if (!inView.current || e.altKey || e.metaKey || e.ctrlKey) return;
+      if ((e.target as HTMLElement).closest("input, textarea, select, [contenteditable]")) return;
+      if (e.key === "ArrowRight") setIdx((i) => wrap(i + 1, n));
+      if (e.key === "ArrowLeft") setIdx((i) => wrap(i - 1, n));
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      io.disconnect();
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [n]);
 
-  const drink = cocktails[view.i];
-  const parts = drink.build.split(" · ").map((p) => p.charAt(0).toUpperCase() + p.slice(1));
+  const shift = drag ? drag.dx / drag.step : 0;
 
   return (
     <section
+      ref={section}
       id="carta"
       aria-label="Carta de cocteles"
-      className="carta relative overflow-hidden bg-noche pt-20 pb-12 md:pb-14"
+      className="carta"
       style={{ ["--carta-tint" as string]: drink.tint } as CSSProperties}
     >
-      <div className="stage-lines" aria-hidden />
-      <span className="carta__aura" aria-hidden />
       <div className="grain pointer-events-none absolute inset-0 z-[1] opacity-[0.12] mix-blend-overlay" aria-hidden />
 
-      <div className="section-wrap relative z-10">
-        <div className="grid items-center gap-6 lg:grid-cols-12 lg:gap-10">
-          <header className="lg:col-span-5 lg:self-end xl:col-span-4">
-            <span className="eyebrow text-ink-muted">La carta</span>
-            <h2 className="font-display mt-4 text-[clamp(1.6rem,2.6vw,2.2rem)] leading-[1.05] text-ink">
-              {total} tragos, <span className="text-ink-soft italic">una sola barra.</span>
-            </h2>
-          </header>
+      <p key={`g-${drink.id}`} className="carta__ghost" aria-hidden>
+        {drink.name}
+      </p>
 
-          <div className="order-3 lg:order-none lg:col-span-7 lg:row-span-2 xl:col-span-8">
-            <CocktailStage
-              drink={drink}
-              dir={view.dir}
-              onPrev={() => step(-1)}
-              onNext={() => step(1)}
-              preload={[cocktails[wrap(view.i + 1)], cocktails[wrap(view.i - 1)]]}
-              className="stage--carta"
-              label="Carta de cocteles"
-            />
-          </div>
+      <div className="carta__pills" role="group" aria-label="Filtrar por licor">
+        {groups.map((g) => {
+          const on = g.id === group;
+          return (
+            <button
+              key={g.id}
+              type="button"
+              aria-pressed={on}
+              className={`carta__pill ${on ? "is-on" : ""}`}
+              onClick={() => {
+                setGroup(g.id);
+                setIdx(0);
+              }}
+            >
+              {g.label}
+              <span className="carta__pill-n">{inGroup(g.id).length}</span>
+            </button>
+          );
+        })}
+      </div>
 
-          <div className="order-4 lg:order-none lg:col-span-5 lg:self-start xl:col-span-4">
-            <div key={drink.id} className="swap-in border-t border-white/10 pt-6">
-              <p className="micro flex items-center justify-between gap-4 text-ink-muted">
-                {drink.base}
-                <span className="tabular-nums text-ink-faint">
-                  <span className="text-ink">{drink.n}</span> / {String(total).padStart(2, "0")}
-                </span>
-              </p>
-              <h3 className="display-lg mt-3 text-ink">{drink.name}</h3>
-              <ul className="carta__build" aria-label="Lleva">
-                {parts.map((part) => (
-                  <li key={part}>{part}</li>
-                ))}
-              </ul>
-              <p className="mt-6 max-w-sm text-[0.95rem] leading-relaxed text-ink-soft">{drink.note}</p>
-            </div>
-            <a href="#cotizar" className="btn-secondary mt-8 !px-6 !py-3.5 text-ink">
-              Lo quiero en mi evento
-            </a>
-          </div>
+      <header className="carta__intro">
+        <p className="eyebrow text-ink-muted">La carta · Costa Rica</p>
+        <h2 className="carta__title">
+          Treinta tragos,
+          <span className="block text-lima italic">una sola barra.</span>
+        </h2>
+        <p className="carta__lede">
+          Clásicos, firmas de la casa y opciones sin alcohol. Escoge los que quieras para tu barra.
+        </p>
+      </header>
+
+      {/* ficha del trago: alto fijo, así cambiar de trago no mueve nada */}
+      <div className="carta__sheet" aria-live="polite">
+        <div key={drink.id} className="swap-in">
+          <p className="micro text-lima">{drink.base}</p>
+          <h3 className="carta__name">{drink.name}</h3>
+          <ul className="carta__ings">
+            {drink.ings.map((ing) => (
+              <li key={ing}>{ing}</li>
+            ))}
+          </ul>
+          <p className="carta__tag">{drink.tag}</p>
         </div>
       </div>
 
       <div
-        ref={railRef}
-        className={`carta__rail relative z-10 mt-8 ${dragging ? "is-dragging" : ""}`}
-        role="group"
-        aria-label="Todos los tragos"
+        ref={reel}
+        className={`carta__reel ${dragging ? "is-dragging" : ""}`}
         onPointerDown={(e) => {
-          if (e.pointerType !== "mouse" || e.button !== 0) return;
-          drag.current = { id: e.pointerId, x: e.clientX, left: e.currentTarget.scrollLeft, moved: false };
+          if (e.pointerType === "mouse" && e.button !== 0) return;
+          const width = reel.current?.clientWidth ?? 1000;
+          press.current = { id: e.pointerId, x: e.clientX, step: width * (width > 900 ? 0.18 : 0.3), moved: false };
         }}
         onPointerMove={(e) => {
-          const d = drag.current;
-          if (!d || d.id !== e.pointerId) return;
-          const dx = e.clientX - d.x;
-          if (!d.moved && Math.abs(dx) > 6) {
-            d.moved = true;
-            setDragging(true);
+          const p = press.current;
+          if (!p || p.id !== e.pointerId) return;
+          const dx = e.clientX - p.x;
+          if (!p.moved && Math.abs(dx) > 8) {
+            p.moved = true;
             e.currentTarget.setPointerCapture(e.pointerId);
           }
-          if (d.moved) e.currentTarget.scrollLeft = d.left - dx;
+          if (p.moved) setDrag({ dx, step: p.step });
         }}
         onPointerUp={(e) => {
-          const d = drag.current;
-          drag.current = null;
-          if (d?.moved) {
+          const p = press.current;
+          if (!p || p.id !== e.pointerId) return;
+          if (p.moved) {
+            const dx = e.clientX - p.x;
+            const steps = Math.round(-dx / p.step) || (Math.abs(dx) > 40 ? -Math.sign(dx) : 0);
+            go(idx + Math.max(-3, Math.min(3, steps)));
+            setDrag(null);
             // el clic que cierra el arrastre no elige trago
-            skipClick.current = true;
-            window.setTimeout(() => (skipClick.current = false), 0);
-            setDragging(false);
-            e.currentTarget.releasePointerCapture(e.pointerId);
+            window.setTimeout(() => (press.current = null), 0);
+          } else {
+            press.current = null;
           }
         }}
+        onPointerCancel={() => {
+          press.current = null;
+          setDrag(null);
+        }}
       >
-        {cocktails.map((c, i) => (
-          <button
-            key={c.id}
-            type="button"
-            aria-pressed={i === view.i}
-            aria-label={c.name}
-            className={`carta__pick ${i === view.i ? "is-on" : ""}`}
-            onClick={() => {
-              if (skipClick.current) {
-                skipClick.current = false;
-                return;
+        <span className="carta__aura" aria-hidden />
+        <span className="carta__beam" aria-hidden />
+        <span className="carta__floor" aria-hidden />
+        {list.map((c, i) => {
+          const d = offset(i, wrap(idx, n), n) + shift;
+          const ad = Math.abs(d);
+          if (ad > 4.2) return null;
+          const live = Math.round(ad) === 0 && !dragging;
+          return (
+            <button
+              key={`${group}-${c.id}`}
+              type="button"
+              tabIndex={ad < 3.5 ? 0 : -1}
+              aria-label={live ? `${c.name}, en el centro` : `Ver ${c.name}`}
+              aria-current={live || undefined}
+              className={`carta__drink ${live ? "is-live" : ""}`}
+              style={
+                {
+                  "--d": d.toFixed(3),
+                  "--ad": ad.toFixed(3),
+                  "--h": (0.3 + 0.62 * c.scale).toFixed(3),
+                  "--ar": `${c.width} / ${c.height}`,
+                  zIndex: 50 - Math.round(ad * 10),
+                } as CSSProperties
               }
-              pick(i);
-            }}
-          >
-            <span className="carta__pick-cut">
+              onClick={() => {
+                if (press.current?.moved) return;
+                if (!live) go(i);
+              }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={c.thumb}
-                alt=""
-                width={c.width}
-                height={c.height}
-                loading="lazy"
-                decoding="async"
-                draggable={false}
-                style={{ height: `${Math.round((0.3 + 0.7 * c.scale) * 100)}%` }}
-              />
-            </span>
-            <span className="carta__pick-name">{c.name}</span>
+              <img src={c.image} alt="" width={c.width} height={c.height} draggable={false} decoding="async" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="carta__mirror" src={c.image} alt="" aria-hidden draggable={false} decoding="async" />
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="carta__bar">
+        <a href="#cotizar" className="btn-secondary carta__cta text-ink">
+          Lo quiero en mi evento
+        </a>
+        <div className="carta__nav">
+          <button type="button" className="carta__arrow" aria-label="Trago anterior" onClick={() => go(idx - 1)}>
+            ←
           </button>
-        ))}
+          <p className="carta__count" aria-label={`Trago ${wrap(idx, n) + 1} de ${n}`}>
+            <span className="text-ink">{pad(wrap(idx, n) + 1)}</span>
+            <span className="text-ink-faint"> / {pad(n)}</span>
+          </p>
+          <button type="button" className="carta__arrow" aria-label="Trago siguiente" onClick={() => go(idx + 1)}>
+            →
+          </button>
+        </div>
+        <p className="carta__hint micro">Arrastra · flechas · clic</p>
       </div>
     </section>
   );

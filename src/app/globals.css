@@ -609,6 +609,50 @@
   right: 0;
 }
 
+/* trago en 3D: el lienzo va encima del haz y se desvanece hacia los lados */
+.stage--3d {
+  cursor: grab;
+}
+
+.stage--3d:active {
+  cursor: grabbing;
+}
+
+.stage__canvas {
+  position: absolute;
+  inset: -4% -6% 0;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 1400ms var(--ease-luxe);
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 88%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
+    linear-gradient(to bottom, transparent, #000 7%, #000 88%, transparent);
+  mask-composite: intersect;
+}
+
+.stage__canvas.is-ready {
+  opacity: 1;
+}
+
+.stage__caption {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  z-index: 3;
+  translate: -50% 0;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.stage__caption .font-display {
+  font-size: 1.15rem;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .stage__drink.is-in {
     animation: none;
@@ -826,152 +870,521 @@
 }
 
 /* =========================================================
-   CARTA — escenario + riel con los 30 tragos
+   CARTA — carrusel bajo el foco, con filtros por licor
    ========================================================= */
+@property --carta-tint {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: #b0391c;
+}
+
 .carta {
-  --carta-tint: #b0391c;
+  --gutter: 1.25rem;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #08090a;
+  padding: 3rem 0 2.75rem;
+  transition: --carta-tint 1000ms var(--ease-luxe);
+}
+
+@media (min-width: 640px) {
+  .carta {
+    --gutter: 2rem;
+  }
+}
+
+.carta__intro {
+  order: 1;
+  padding-inline: var(--gutter);
+}
+
+.carta__title {
+  margin-top: 1rem;
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-size: clamp(2.3rem, 4vw, 4.1rem);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: #f7f4ec;
+}
+
+.carta__lede {
+  display: none;
+  max-width: 23rem;
+  margin-top: 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #cdcbc3;
+}
+
+.carta__pills {
+  order: 2;
+  display: flex;
+  gap: 0.45rem;
+  margin-top: 1.5rem;
+  overflow-x: auto;
+  padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+
+.carta__pills::-webkit-scrollbar {
+  display: none;
+}
+
+.carta__pill {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(247, 244, 236, 0.14);
+  border-radius: 999px;
+  background: rgba(8, 9, 10, 0.45);
+  padding: 0.5rem 0.95rem;
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #cdcbc3;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition:
+    background 400ms var(--ease-luxe),
+    color 400ms var(--ease-luxe),
+    border-color 400ms var(--ease-luxe);
+}
+
+.carta__pill:hover {
+  border-color: rgba(247, 244, 236, 0.4);
+  color: #f7f4ec;
+}
+
+.carta__pill.is-on {
+  border-color: #f7f4ec;
+  background: #f7f4ec;
+  color: #08090a;
+}
+
+.carta__pill-n {
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
+}
+
+/* nombre gigante hueco detrás de los tragos */
+.carta__ghost {
+  position: absolute;
+  left: 50%;
+  top: 17.5rem;
+  z-index: 0;
+  translate: -50% 0;
+  margin: 0;
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-size: clamp(5rem, 15.5vw, 15.5rem);
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(247, 244, 236, 0.13);
+  pointer-events: none;
+  animation: ghost-in 1100ms var(--ease-luxe) both;
+}
+
+@keyframes ghost-in {
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ficha del trago: alto fijo para que nada se corra al cambiar */
+.carta__sheet {
+  order: 4;
+  height: 10.5rem;
+  margin-top: 0.75rem;
+  overflow: hidden;
+  padding-inline: var(--gutter);
+  text-align: center;
+}
+
+.carta__name {
+  margin-top: 0.5rem;
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-size: clamp(2rem, 3.4vw, 3.5rem);
+  line-height: 1.02;
+  color: #f7f4ec;
+}
+
+.carta__ings {
+  margin-top: 0.7rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #cdcbc3;
+}
+
+.carta__ings li {
+  display: inline;
+}
+
+.carta__ings li + li::before {
+  content: " · ";
+  color: #5b5a56;
+}
+
+.carta__tag {
+  display: inline-block;
+  margin-top: 0.9rem;
+  border: 1px solid rgba(247, 244, 236, 0.16);
+  border-radius: 999px;
+  padding: 0.4rem 0.85rem;
+  font-size: 10px;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #8c8b85;
+}
+
+/* el carrusel: cada trago se ubica según --d, su distancia al del centro */
+.carta__reel {
+  --kx: 34;
+  --kx2: 4.8;
+  --ks: 0.5;
+  --ks2: 0.1;
+  --kl: 0.045;
+  --lmax: 0.16;
+  --fade-at: 2.6;
+  --hmax: 80;
+  order: 3;
+  position: relative;
+  height: 22rem;
+  margin-top: 0.5rem;
+  container-type: size;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+
+.carta__reel.is-dragging {
+  cursor: grabbing;
+}
+
+.carta__beam {
+  position: absolute;
+  left: 50%;
+  bottom: 6cqh;
+  z-index: 0;
+  width: 66cqw;
+  height: 128cqh;
+  translate: -50% 0;
+  clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--carta-tint) 20%, rgba(247, 244, 236, 0.07)),
+    color-mix(in srgb, var(--carta-tint) 11%, transparent) 70%,
+    transparent
+  );
+  filter: blur(1.5px);
+  pointer-events: none;
+}
+
+.carta__floor {
+  position: absolute;
+  left: 50%;
+  bottom: -9cqh;
+  z-index: 0;
+  width: 112cqw;
+  height: 30cqh;
+  translate: -50% 0;
+  border-radius: 50%;
+  border: 1px solid rgba(247, 244, 236, 0.07);
+  background: radial-gradient(closest-side, rgba(247, 244, 236, 0.05), transparent);
+  pointer-events: none;
 }
 
 .carta__aura {
   position: absolute;
-  inset: 0;
+  left: 50%;
+  bottom: -6cqh;
+  z-index: 0;
+  width: 90cqw;
+  height: 60cqh;
+  translate: -50% 0;
+  background: radial-gradient(closest-side, color-mix(in srgb, var(--carta-tint) 30%, transparent), transparent);
+  filter: blur(24px);
   pointer-events: none;
-  background: radial-gradient(
-    46% 50% at 66% 46%,
-    color-mix(in srgb, var(--carta-tint) 16%, transparent),
-    transparent 72%
-  );
-  transition: background 1100ms var(--ease-luxe);
 }
 
-.stage--carta {
-  --stage-h: clamp(19rem, 48vh, 25rem);
-}
-
-@media (min-width: 1024px) {
-  .stage--carta {
-    --stage-h: clamp(21rem, 54vh, 38rem);
-  }
-}
-
-.carta__build {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-}
-
-.carta__build li {
-  border: 1px solid rgba(247, 244, 236, 0.14);
-  border-radius: 999px;
-  padding: 0.45rem 0.9rem;
-  font-size: 12px;
-  color: #cdcbc3;
-}
-
-.carta__rail {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  gap: 0.25rem;
-  overflow-x: auto;
-  padding-inline: max(1.25rem, calc((100vw - 86rem) / 2 + 3rem));
-  padding-block: 0.5rem 0.25rem;
-  scrollbar-width: none;
-  overscroll-behavior-x: contain;
-  cursor: grab;
-  --fade: min(2.5rem, 5%);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 var(--fade), #000 calc(100% - var(--fade)), transparent);
-}
-
-.carta__rail::-webkit-scrollbar {
-  display: none;
-}
-
-.carta__rail.is-dragging {
-  cursor: grabbing;
-}
-
-.carta__pick {
-  position: relative;
-  flex: 0 0 auto;
-  display: flex;
-  width: 6.25rem;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.5rem 0.25rem 0.9rem;
-  opacity: 0.42;
-  cursor: pointer;
-  transition: opacity 500ms var(--ease-luxe);
-}
-
-.carta__pick:hover,
-.carta__pick:focus-visible {
-  opacity: 0.85;
-}
-
-.carta__pick.is-on {
-  opacity: 1;
-}
-
-.carta__pick::after {
-  content: "";
+.carta__drink {
   position: absolute;
   left: 50%;
   bottom: 0;
-  height: 1px;
-  width: 0;
-  translate: -50% 0;
-  background: #f7f4ec;
-  transition: width 600ms var(--ease-luxe);
+  height: calc(var(--h) * var(--hmax) * 1cqh);
+  aspect-ratio: var(--ar);
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform-origin: 50% 100%;
+  transform: translate3d(
+      calc(-50% + (var(--d) * var(--kx) - var(--d) * var(--ad) * var(--kx2)) * 1cqw),
+      calc(min(var(--lmax), var(--ad) * var(--ad) * var(--kl)) * -100cqh),
+      0
+    )
+    scale(calc(1 - var(--ad) * var(--ks) + var(--ad) * var(--ad) * var(--ks2)));
+  filter: blur(calc(max(0, var(--ad) - 1) * 1.6px)) brightness(calc(1 - min(0.6, var(--ad) * 0.19)));
+  opacity: clamp(0, (var(--fade-at) - var(--ad)) * 1.4, 1);
+  transition:
+    transform 850ms var(--ease-luxe),
+    filter 700ms var(--ease-luxe),
+    opacity 600ms var(--ease-luxe);
 }
 
-.carta__pick.is-on::after {
-  width: 2.25rem;
+.carta__drink.is-live {
+  cursor: default;
 }
 
-.carta__pick-cut {
-  display: flex;
-  height: 6.5rem;
+.carta__drink:focus-visible {
+  outline: 1px solid #d4e44a;
+  outline-offset: 8px;
+  border-radius: 1rem;
+}
+
+.carta__reel.is-dragging .carta__drink {
+  transition: none;
+}
+
+.carta__drink img {
+  display: block;
+  height: 100%;
   width: 100%;
-  align-items: flex-end;
-  justify-content: center;
-}
-
-.carta__pick-cut img {
-  width: auto;
-  max-width: 100%;
+  max-width: none;
   object-fit: contain;
-  object-position: bottom;
-  filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.5));
-  transition: transform 600ms var(--ease-luxe);
+  pointer-events: none;
+  filter: drop-shadow(0 18px 18px rgba(0, 0, 0, 0.55));
 }
 
-.carta__pick:hover .carta__pick-cut img,
-.carta__pick.is-on .carta__pick-cut img {
-  transform: translateY(-4px);
+/* reflejo sobre el piso: el recorte volteado, apenas visible */
+.carta__drink .carta__mirror {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  transform: scaleY(-1);
+  opacity: 0.17;
+  filter: blur(1px);
+  -webkit-mask-image: linear-gradient(to top, #000, transparent 38%);
+  mask-image: linear-gradient(to top, #000, transparent 38%);
 }
 
-.carta__pick-name {
-  min-height: 2.2em;
-  font-size: 9.5px;
-  font-weight: 500;
-  line-height: 1.3;
-  letter-spacing: 0.2em;
+.carta__bar {
+  order: 5;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  padding-inline: var(--gutter);
+}
+
+.carta__nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.carta__arrow {
+  display: grid;
+  height: 3.25rem;
+  width: 3.25rem;
+  place-items: center;
+  border: 1px solid rgba(247, 244, 236, 0.22);
+  border-radius: 999px;
+  color: #f7f4ec;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition:
+    border-color 400ms var(--ease-luxe),
+    background 400ms var(--ease-luxe),
+    transform 300ms var(--ease-luxe);
+}
+
+.carta__arrow:hover {
+  border-color: rgba(247, 244, 236, 0.75);
+  background: rgba(247, 244, 236, 0.05);
+}
+
+.carta__arrow:active {
+  transform: scale(0.94);
+}
+
+.carta__count {
+  min-width: 5.5rem;
   text-align: center;
-  text-transform: uppercase;
-  color: #cdcbc3;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  font-variant-numeric: tabular-nums;
+}
+
+.carta__hint {
+  display: none;
+  color: #5b5a56;
 }
 
 @media (min-width: 768px) {
-  .carta__pick {
-    width: 7.25rem;
+  .carta__reel {
+    --kx: 24;
+    --kx2: 3;
+    --ks: 0.4;
+    --ks2: 0.06;
+    --fade-at: 3.4;
+    height: 27rem;
   }
 
-  .carta__pick-cut {
-    height: 6.75rem;
+  .carta__beam {
+    width: 40cqw;
+  }
+
+  .carta__ghost {
+    top: 15rem;
+  }
+}
+
+/* escritorio: todo en su lugar fijo sobre una sola pantalla */
+@media (min-width: 1024px) {
+  .carta {
+    --gutter: max(3rem, calc((100% - 86rem) / 2 + 3rem));
+    display: block;
+    height: 100svh;
+    min-height: 44rem;
+    max-height: 62rem;
+    padding: 0;
+  }
+
+  /* ocupa la pantalla entera y el menú flota encima: al llegar desde el menú no se corta abajo */
+  .carta[id] {
+    scroll-margin-top: 0;
+  }
+
+  .carta__pills {
+    position: absolute;
+    top: 6.1rem;
+    inset-inline: var(--gutter);
+    z-index: 20;
+    justify-content: safe center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .carta__intro {
+    position: absolute;
+    top: 10.6rem;
+    left: var(--gutter);
+    z-index: 20;
+    max-width: 26rem;
+    padding: 0;
+  }
+
+  .carta__lede {
+    display: block;
+  }
+
+  .carta__sheet {
+    position: absolute;
+    top: 10.6rem;
+    right: var(--gutter);
+    z-index: 20;
+    width: 21rem;
+    height: 18rem;
+    margin: 0;
+    padding: 0;
+    text-align: right;
+  }
+
+  .carta__ings {
+    margin-top: 1.1rem;
+    line-height: 1.75;
+  }
+
+  .carta__ings li {
+    display: block;
+  }
+
+  .carta__ings li + li::before {
+    content: none;
+  }
+
+  .carta__ghost {
+    top: 21%;
+  }
+
+  .carta__reel {
+    --kx: 20.5;
+    --kx2: 2.5;
+    --ks: 0.36;
+    --ks2: 0.05;
+    --kl: 0.035;
+    --lmax: 0.2;
+    --fade-at: 3.7;
+    --hmax: 88;
+    position: absolute;
+    inset-inline: 0;
+    bottom: 12.5%;
+    z-index: 10;
+    height: 50%;
+    margin: 0;
+  }
+
+  .carta__beam {
+    width: 30cqw;
+    height: 178cqh;
+    bottom: 4cqh;
+  }
+
+  .carta__floor {
+    width: 74cqw;
+    height: 24cqh;
+    bottom: -7cqh;
+  }
+
+  .carta__aura {
+    width: 60cqw;
+    height: 70cqh;
+  }
+
+  .carta__bar {
+    position: absolute;
+    inset-inline: var(--gutter);
+    bottom: 1.6rem;
+    z-index: 20;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+  }
+
+  .carta__cta {
+    justify-self: start;
+  }
+
+  .carta__hint {
+    display: block;
+    justify-self: end;
+    /* que no quede debajo del botón flotante de WhatsApp */
+    margin-right: max(0rem, calc(4.75rem - var(--gutter)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carta__drink {
+    transition: opacity 300ms linear;
+  }
+  .carta__ghost {
+    animation: none;
   }
 }
 
