@@ -609,50 +609,6 @@
   right: 0;
 }
 
-/* trago en 3D: el lienzo va encima del haz y se desvanece hacia los lados */
-.stage--3d {
-  cursor: grab;
-}
-
-.stage--3d:active {
-  cursor: grabbing;
-}
-
-.stage__canvas {
-  position: absolute;
-  inset: -4% -6% 0;
-  z-index: 2;
-  opacity: 0;
-  transition: opacity 1400ms var(--ease-luxe);
-  -webkit-mask-image:
-    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
-    linear-gradient(to bottom, transparent, #000 7%, #000 88%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image:
-    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
-    linear-gradient(to bottom, transparent, #000 7%, #000 88%, transparent);
-  mask-composite: intersect;
-}
-
-.stage__canvas.is-ready {
-  opacity: 1;
-}
-
-.stage__caption {
-  position: absolute;
-  left: 50%;
-  bottom: 0;
-  z-index: 3;
-  translate: -50% 0;
-  text-align: center;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.stage__caption .font-display {
-  font-size: 1.15rem;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .stage__drink.is-in {
     animation: none;

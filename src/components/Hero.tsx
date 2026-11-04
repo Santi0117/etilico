@@ -1,11 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { cocktailById } from "@/lib/cocktails";
 import { useReady } from "@/hooks/useReady";
 import { site } from "@/lib/site";
-import { DRINKS_3D } from "./hero3d/drinks";
-import HeroBar from "./hero3d/HeroBar";
+import CocktailStage from "./CocktailStage";
 import TrustMarquee from "./TrustMarquee";
+
+const REEL = [
+  "negroni",
+  "espresso-martini",
+  "aperol-spritz",
+  "paloma",
+  "cosmopolitan",
+  "moscow-mule",
+  "blue-lagoon",
+  "pina-colada",
+]
+  .map((id) => cocktailById(id)!)
+  .filter(Boolean);
 
 const stats = [
   { value: "500", suffix: "+", label: "Eventos servidos" },
@@ -13,14 +26,12 @@ const stats = [
   { value: "CR", suffix: "", label: "Todo el país" },
 ];
 
-const wrap = (n: number) => (n + DRINKS_3D.length) % DRINKS_3D.length;
+const wrap = (n: number) => (n + REEL.length) % REEL.length;
 
 export default function Hero() {
   const ready = useReady();
   const [view, setView] = useState<{ i: number; dir: 1 | -1 }>({ i: 0, dir: 1 });
-  const [hover, setHover] = useState(false);
-  const [grab, setGrab] = useState(false);
-  const hold = hover || grab;
+  const [hold, setHold] = useState(false);
 
   const step = useCallback((dir: 1 | -1) => {
     setView((v) => ({ i: wrap(v.i + dir), dir }));
@@ -30,10 +41,11 @@ export default function Hero() {
   useEffect(() => {
     if (!ready || hold) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setTimeout(() => step(1), 7000);
+    const id = window.setTimeout(() => step(1), 5200);
     return () => window.clearTimeout(id);
   }, [ready, hold, view, step]);
 
+  const drink = REEL[view.i];
   const show = (delay: number) => ({
     transitionDelay: `${delay}ms`,
     opacity: ready ? 1 : 0,
@@ -104,15 +116,18 @@ export default function Hero() {
           <div
             className={`lg:col-span-6 xl:col-span-7 ${fade}`}
             style={show(520)}
-            onPointerEnter={(e) => e.pointerType === "mouse" && setHover(true)}
-            onPointerLeave={() => setHover(false)}
+            onPointerEnter={(e) => e.pointerType === "mouse" && setHold(true)}
+            onPointerLeave={() => setHold(false)}
           >
-            <HeroBar
-              index={view.i}
+            <CocktailStage
+              drink={drink}
               dir={view.dir}
               onPrev={() => step(-1)}
               onNext={() => step(1)}
-              onHold={setGrab}
+              preload={[REEL[wrap(view.i + 1)], REEL[wrap(view.i - 1)]]}
+              priority
+              className="stage--hero"
+              label="Cocteles de la casa"
             />
           </div>
         </div>
