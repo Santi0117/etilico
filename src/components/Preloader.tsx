@@ -2,29 +2,32 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const W = 300;
-const H = 104;
+/** Logo oficial, en su tamaño en px. */
+const LOGO = "/brand/etilico.png";
+const W = 690;
+const H = 876;
 const MIN_MS = 1700;
 const MAX_MS = 4600;
 
 /** Assets que vale la pena tener listos antes de abrir el telón. */
 const WARMUP = [
-  "/barras/case.webp",
+  LOGO,
+  "/barras/slat.webp",
   "/cocteles/negroni.webp",
   "/cocteles/espresso-martini.webp",
 ];
 
 function wavePath(progress: number, phase: number) {
-  // el líquido recorre exactamente la caja de las letras
-  const level = 88 - 62 * progress;
-  const amp = 3.4 * (1 - progress * 0.55);
+  // el líquido sube desde la base del logo hasta taparlo entero
+  const amp = 26 * (1 - progress * 0.55);
+  const level = H + amp - (H + 2 * amp) * progress;
   const seg = W / 4;
   let d = `M ${-W + phase} ${level}`;
   for (let i = 0; i < 12; i += 1) {
     const x = -W + phase + i * seg;
     d += ` Q ${x + seg / 2} ${level + (i % 2 === 0 ? -amp : amp)} ${x + seg} ${level}`;
   }
-  d += ` L ${2 * W} ${H + 20} L ${-W} ${H + 20} Z`;
+  d += ` L ${2 * W} ${H + 80} L ${-W} ${H + 80} Z`;
   return d;
 }
 
@@ -75,7 +78,7 @@ export default function Preloader() {
       if (target >= 0.999 && shown > 0.985) shown = 1;
 
       setProgress(shown);
-      setPhase((p) => (p + (reduced ? 0 : 1.15)) % (W / 2));
+      setPhase((p) => (p + (reduced ? 0 : W / 260)) % (W / 2));
 
       if (shown >= 1) {
         window.setTimeout(() => {
@@ -138,53 +141,22 @@ export default function Preloader() {
                 <stop offset="55%" stopColor="#eef5b8" />
                 <stop offset="100%" stopColor="#f7f4ec" />
               </linearGradient>
+              <mask id="pre-logo">
+                <image href={LOGO} width={W} height={H} />
+              </mask>
               <mask id="pre-liquid">
-                <rect x={-W} y={-20} width={W * 3} height={H + 40} fill="black" />
+                <rect x={-W} y={-H} width={W * 3} height={H * 3} fill="black" />
                 <path d={wavePath(progress, phase)} fill="white" />
               </mask>
             </defs>
 
-            {/* copa del acento sobre la Í */}
-            <g
-              transform={`translate(${W / 2 - 4} 4) scale(0.9)`}
-              fill="none"
-              stroke="#d4e44a"
-              strokeWidth="1.1"
-              opacity={0.35 + progress * 0.65}
-            >
-              <path d="M0 0 L11 0 L5.5 10 Z" />
-              <path d="M5.5 10 V19" />
-              <path d="M0.8 19 H10.2" />
+            {/* el logo se llena como una copa */}
+            <g mask="url(#pre-logo)">
+              <rect className="pre__glyph-ghost" width={W} height={H} />
+              <rect width={W} height={H} fill="url(#pre-pour)" mask="url(#pre-liquid)" />
             </g>
-
-            <text
-              className="pre__glyph-ghost"
-              x="50%"
-              y="82"
-              textAnchor="middle"
-              fontFamily="var(--font-bodoni), Georgia, serif"
-              fontSize="66"
-              letterSpacing="4"
-            >
-              ETÍLICO
-            </text>
-            <text
-              className="pre__glyph-fill"
-              fill="url(#pre-pour)"
-              x="50%"
-              y="82"
-              textAnchor="middle"
-              fontFamily="var(--font-bodoni), Georgia, serif"
-              fontSize="66"
-              letterSpacing="4"
-              mask="url(#pre-liquid)"
-            >
-              ETÍLICO
-            </text>
           </svg>
         </span>
-
-        <span className="pre__tag">Cocktails &amp; Drinks</span>
 
         <span className="pre__bar">
           <i style={{ width: `${pct}%` }} />

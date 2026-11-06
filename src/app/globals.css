@@ -292,7 +292,8 @@
 .pre__mark {
   position: relative;
   display: block;
-  width: min(74vw, 24rem);
+  width: min(40vw, 10.5rem);
+  margin-bottom: 0.6rem;
 }
 
 .pre__mark svg {
@@ -303,21 +304,7 @@
 }
 
 .pre__glyph-ghost {
-  fill: none;
-  stroke: rgba(247, 244, 236, 0.26);
-  stroke-width: 0.6;
-}
-
-.pre__glyph-fill {
-  /* el degradado va como atributo en el SVG */
-}
-
-.pre__tag {
-  font-size: 9px;
-  letter-spacing: 0.5em;
-  text-transform: uppercase;
-  color: rgba(247, 244, 236, 0.4);
-  padding-left: 0.5em;
+  fill: rgba(247, 244, 236, 0.16);
 }
 
 .pre__bar {

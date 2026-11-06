@@ -14,7 +14,7 @@ export default function Footer() {
         <Reveal>
           <div className="grid gap-12 md:grid-cols-12">
             <div className="md:col-span-5">
-              <Logo variant="stacked" className="text-[3.6rem] text-ink sm:text-[4.6rem]" />
+              <Logo className="h-36 text-ink sm:h-44" />
               <p className="mt-8 max-w-xs text-sm leading-relaxed text-ink-muted">
                 {site.specialty} en {site.region}. Llegamos con la barra, el equipo y los
                 bartenders.

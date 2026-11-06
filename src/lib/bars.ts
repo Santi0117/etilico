@@ -18,22 +18,8 @@ export type Bar = {
 
 export const bars: Bar[] = [
   {
-    id: "case",
-    index: "01",
-    name: "Barra Etílico",
-    ghost: "ETÍLICO",
-    image: "/barras/case.webp",
-    alt: "Barra portátil Etílico tipo flight case con licores, cristalería y repisa de vidrio",
-    intro: "Nuestra barra insignia, con el logo de Etílico iluminado al frente.",
-    bg: "#08090a",
-    ink: "#f7f4ec",
-    accent: "#d4e44a",
-    tone: "dark",
-    width: 560,
-  },
-  {
     id: "slat",
-    index: "02",
+    index: "01",
     name: "Barra Negra",
     ghost: "NEGRA",
     image: "/barras/slat.webp",
@@ -47,7 +33,7 @@ export const bars: Bar[] = [
   },
   {
     id: "blanche",
-    index: "03",
+    index: "02",
     name: "Barra Blanca",
     ghost: "BLANCA",
     image: "/barras/blanca.webp",
@@ -58,5 +44,19 @@ export const bars: Bar[] = [
     accent: "#d4e44a",
     tone: "dark",
     width: 760,
+  },
+  {
+    id: "case",
+    index: "03",
+    name: "Barra Etílico",
+    ghost: "ETÍLICO",
+    image: "/barras/etilico.webp",
+    alt: "Barra portátil Etílico tipo flight case con el logo al frente, licores, cristalería y repisa lateral con códigos QR",
+    intro: "Nuestra barra insignia, con el logo de Etílico al frente.",
+    bg: "#08090a",
+    ink: "#f7f4ec",
+    accent: "#d4e44a",
+    tone: "dark",
+    width: 560,
   },
 ];

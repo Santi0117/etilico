@@ -157,14 +157,6 @@ export default function Reservation() {
   const cantonOptions = province ? cantons[province as Province] : [];
   const barName = bars.find((b) => b.id === barId)?.name ?? "A recomendación de Etílico";
 
-  const estimate = useMemo(
-    () => ({
-      drinks: Math.max(1, Math.round(guests * (hours + 1))),
-      bartenders: Math.max(1, Math.ceil(guests / 60)),
-    }),
-    [guests, hours],
-  );
-
   const message = useMemo(
     () =>
       [
@@ -534,30 +526,6 @@ export default function Reservation() {
                   </div>
                 ))}
               </dl>
-
-              <div className="border-t border-white/10 bg-white/[0.02] px-6 py-6 sm:px-7">
-                <p className="micro text-ink-faint">Estimación de servicio</p>
-                <div className="mt-4 grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="font-display text-4xl text-ink tabular-nums">
-                      {estimate.drinks}
-                    </p>
-                    <p className="micro mt-1.5 text-ink-faint">Tragos aprox.</p>
-                  </div>
-                  <div>
-                    <p className="font-display text-4xl text-ink tabular-nums">
-                      {estimate.bartenders}
-                    </p>
-                    <p className="micro mt-1.5 text-ink-faint">
-                      Bartender{estimate.bartenders > 1 ? "s" : ""}
-                    </p>
-                  </div>
-                </div>
-                <p className="mt-5 text-xs leading-relaxed text-ink-faint">
-                  Cálculo de referencia: dos tragos la primera hora y uno por hora
-                  después. Lo afinamos en la cotización.
-                </p>
-              </div>
 
               <div className="border-t border-white/10 p-6 sm:p-7">
                 <button type="submit" className="btn-primary w-full" disabled={saving}>

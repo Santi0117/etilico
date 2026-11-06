@@ -90,7 +90,7 @@ export default function Header() {
       >
         <div className="section-wrap relative flex h-[4.5rem] items-center justify-between gap-4 md:h-20 lg:grid lg:grid-cols-[1fr_auto_1fr]">
           <a href="#inicio" aria-label="Inicio" className="relative z-10 min-w-0 shrink justify-self-start">
-            <Logo variant="stacked" mono className="text-[13px] sm:text-[15px]" />
+            <Logo className="h-11 sm:h-[3.25rem]" />
           </a>
 
           <nav className="hidden items-center gap-1 lg:flex" aria-label="Principal">
