@@ -50,7 +50,7 @@ export const bars: Bar[] = [
     index: "03",
     name: "Barra Etílico",
     ghost: "ETÍLICO",
-    image: "/barras/case.webp",
+    image: "/barras/barra-etilico.webp",
     alt: "Barra portátil Etílico tipo flight case con licores, cristalería y repisa de vidrio",
     intro: "Nuestra barra insignia, con el logo de Etílico iluminado al frente.",
     bg: "#08090a",
